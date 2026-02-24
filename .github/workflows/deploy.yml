@@ -19,12 +19,17 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          if [ ! -d "repo-backend" ]; then
+          cd /home/ec2-user
+
+          if [ ! -d repo-backend ]; then
             git clone git@github.com:YasmineMhadhbi/repo-backend.git
           fi
 
           cd repo-backend
           git pull origin main
+
           npm install
           npm run build
+
           pm2 restart backend || pm2 start dist/main.js --name backend
+          pm2 save
