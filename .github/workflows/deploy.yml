@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-and-deploy:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -39,23 +38,11 @@ jobs:
 
             docker pull ${{ secrets.DOCKER_USERNAME }}/nest-backend
 
-            docker stop mongo_db || true
-            docker rm mongo_db || true
-
             docker stop nest-backend || true
             docker rm nest-backend || true
 
-            # MongoDB container
             docker run -d \
-            --name mongo_db \
-            -p 27017:27017 \
-            -v mongo_data:/data/db \
-            mongo:6
-
-            # Backend container
-            docker run -d \
-            -p 8000:8000 \
-            --name nest-backend \
-            --link mongo_db \
-            -e MONGO_URI=mongodb://mongo_db:27017/backend \
-            ${{ secrets.DOCKER_USERNAME }}/nest-backend
+              -p 8000:8000 \
+              --name nest-backend \
+              --restart always \
+              ${{ secrets.DOCKER_USERNAME }}/nest-backend
